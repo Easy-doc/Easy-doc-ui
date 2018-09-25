@@ -1,2 +1,2 @@
-# Easy-doc-ui
-Easy-doc的前端页面
+# easy-doc-ui
+easy-doc的前端页面
