@@ -1,0 +1,14 @@
+@import '~antd/dist/antd.css';
+.container {
+    background: '#fff'; 
+    padding: 24;
+    min-height: 380;
+}
+
+.collapse {
+    border: 1px solid red;
+}
+
+.panel {
+    border: 1px solid red;
+}
