@@ -1,4 +1,4 @@
-@import '~antd/dist/antd.css';
+
 .container {
     background: '#fff'; 
     padding: 24;
@@ -10,5 +10,84 @@
 }
 
 .panel {
-    border: 1px solid red;
+    border: 1px solid #ededed;
+    height: 75px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    font-size: 20px;
+}
+
+.panelButton {
+    width: 80px;
+    text-align: center;
+    height: 35px;
+    margin: 0 10px;
+}
+
+.pressButton {
+    width: 80px;
+    float: right;
+    text-align: center;
+    margin: 0 10px;
+}
+
+.panelItem {
+    display: flex;
+    justify-content: space-between;
+}
+
+.panelItem .name {
+    font-size: 30px;
+    font-weight: 500;
+    margin: 0 10px;
+    line-height: 88px;
+}
+
+.panelItem .headPath {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.panelItem .description {
+    font-size: 20px;
+}
+
+.panelItem .author {
+    font-size: 20px;
+    margin: 0 20px;
+    line-height: 88px;
+}
+
+.subPanel {
+    text-align: left;
+    /* border: 1px solid red; */
+    /* margin: 0 10px; */
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.subPanelDetail {
+    margin: 15px 0;
+}
+
+.excute {
+    height: 45px;
+    font-size: 20px;
+    margin: 20px 0;
+}
+
+.required {
+    color: red;
+}
+
+.paramType {
+    font-style: italic;
+    font-size: 16px;
+}
+
+.deprecated {
+    text-decoration:line-through;
+    text-decoration-color: red;
 }
