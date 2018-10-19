@@ -27,7 +27,7 @@ class Index extends React.Component {
     this.setState({ resource: resource.data });
   }
 
-  showModal(e) {
+  showModal = (e) => {
     e.stopPropagation();
     this.setState({ visible: true });
   }
@@ -135,6 +135,7 @@ handleCancel = (e) => {
   }
 //子panel内容的头部
   renderPanelContentHead(contentItem) {
+    const {getFieldDecorator} = this.props.form;
     return(
       <div className="panel">
         <div>
@@ -148,6 +149,13 @@ handleCancel = (e) => {
           onOk={this.handleOk}
           onCancel={this.handleCancel}
         >
+          <Form>
+            <FormItem label="请求数量">
+            {getFieldDecorator('n', {})(
+              <Input />
+            )}
+            </FormItem>
+          </Form>
         </Modal>
       </div>
     )
