@@ -6,6 +6,7 @@ import { Button } from 'antd';
 import { jsonParse, getDefault, getPressureRes, getBtnBg } from '../util/util';
 import { defaultObj } from '../util/constant';
 import  FormContent  from '../common/FormContent/FormContent';
+import Authorize from '../common/Authorize/Authorize';
 import './Index.css';
 
 const { Header, Content, Footer } = Layout;
@@ -146,6 +147,7 @@ class Index extends React.Component {
             <TabPane tab="接口列表" key="1">{this.renderContent()}</TabPane>
             <TabPane tab="Models" key="2">{this.renderModel()}</TabPane>
             <TabPane tab="压力测试" key="3">{this.renderPressurelContent()}</TabPane>
+            <TabPane tab="Authorize" key="4"><Authorize /></TabPane>
           </Tabs>
       </div>
     </Content>
@@ -290,11 +292,6 @@ class Index extends React.Component {
     )
   }
 
-  // renderAuthorize() {
-  //   return (
-  //     <Form>
-  //     </Form>)
-  // }
   //子panel内容的头部
   renderPanelContentHead(contentItem) {
     return(
@@ -352,8 +349,8 @@ class Index extends React.Component {
 
   renderFoot() {
     return(
-      <Footer style={{ textAlign: 'center' }}>
-        Easy-doc ©2018 Created by Stalary
+      <Footer style={{ textAlign: 'center', marginTop: '10px' }}>
+        Easy-doc ©2018 Created & UI Designed by Stalary
       </Footer>
     )
   }

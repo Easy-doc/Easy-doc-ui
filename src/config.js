@@ -1,31 +1,38 @@
 
 import 'whatwg-fetch';
 
-// 获取接口文档的地址
-const base_url = 'http://120.24.5.178:19960/easy-doc/resource';
-// 获取请求地址
-const getList = 'http://120.24.5.178:19960/easy-doc/list';
 // 接口拼接地址
 export const base = 'http://120.24.5.178:19960';
+// 获取接口文档的地址
+const base_url = base + '/easy-doc/resource';
+// 获取请求地址
+const getList = base + '/easy-doc/list';
 // 压力测试地址
-export const pressure_url = 'http://120.24.5.178:19960/easy-doc/pressureTest';
+export const pressure_url =  base + '/easy-doc/pressureTest';
 const base_fetch = function (url, method, body){
-    const getHead = {
-        method: method,
-        mode: 'cors',
-        // credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        }}
-    const postHead = {
-        method: method,
-        mode: 'cors',
-        // credentials: 'include',
-        body: body,
-        headers: {
-            'Content-Type': 'application/json'
-        }}
-    const res = fetch(url, method === 'GET' ? getHead : postHead ).then(response => { return response.json() });
+    const cookie = localStorage.getItem('cookie');
+    const token = localStorage.getItem('token');
+    const header = function () {
+        const obj = {   method: method,
+                        mode: 'cors',
+                        credentials: 'include',
+                        headers: {'Content-Type': 'application/json'}
+                    }
+        if(method === 'POST') {
+            obj['body'] = body;
+        }          
+    
+        if(cookie !== null && token !== null) {
+            obj.headers['Authorization'] = token;
+            obj.headers['Set-Cookie'] = cookie;
+        } else if(cookie !== null) {
+            obj.headers['Set-Cookies'] = cookie;
+        } else if (token !== null) {
+            obj.headers['Authorization'] = token;
+        }
+        return obj;
+    }
+    const res = fetch(url, header()).then(response => { return response.json() });
     return res;
 }
 

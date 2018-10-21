@@ -64,13 +64,14 @@ class FormContent extends React.Component {
             Object.keys(values).forEach(item => {
                 if(/^{\(.|\n\)*}$/g.test(values[item])) {
                     body = JSON.parse(values[item]);
-                } else {
+                } else if(values[item] !== undefined && values[item] !== ''){
                     param += `${item}=${values[item]}&`;
                 }
             })
             url  = base + path + '?' + param.substring(0, param.length-1);
           }
         });
+        console.log('url', url, 'type', type, 'boyd', body)
         const res =  await getRes(url, type, JSON.stringify(body));
         console.log('res', res, url, body);
         this.setState({ response: res });

@@ -61,9 +61,9 @@ export const getPressureRes = function(obj) {
 export const getBtnBg = function (type) {
     switch(type) {
         case 'GET':
-            return '#0099CB';
+            return '#85BCBF';
         case 'POST':
-            return '#65CC66';
+            return '#7B76AC';
         case 'PUT':
             return '#5C0C7B';
         case 'HEAD':
