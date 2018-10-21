@@ -1,15 +1,47 @@
 
 .container {
-    background: '#fff'; 
     padding: 24;
     min-height: 380;
+    background: #fff;
 }
 
-.collapse {
+.tabs {
+    margin-top: 30px;
+    min-height: 380px;
+}
+
+.logo {
+    background: url('../../assets/images/Easy-Doc.png') no-repeat;
+    background-size: 100% 100%;
+    width: 170px;
+    height: 60px;
+    float: left;
+}
+
+.title {
+    background: #fff;
+    color: black;
+    text-align: left;
+    padding-left: 50px;
+}
+
+.title .name {
+    font-size: 50px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.title .description {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.title .concat {
+    font-size: 20px;
 }
 
 .panel {
-    border: 1px solid #ededed;
+    /* border: 1px solid #ededed; */
     height: 75px;
     display: flex;
     justify-content: space-between;
@@ -23,6 +55,7 @@
     text-align: center;
     height: 35px;
     margin: 0 10px;
+    border: none;
 }
 
 .pressButton {
@@ -54,9 +87,14 @@
 }
 
 .panelItem .author {
+    height: fit-content;
+    float: right;
     font-size: 20px;
-    margin: 0 20px;
-    line-height: 88px;
+    margin: 33px 20px;
+    padding: 4px 7px;
+    border-radius: 17px;
+    background: #5a5a5a;
+    color: #fff;
 }
 
 .subPanel {
@@ -89,4 +127,31 @@
 .deprecated {
     text-decoration:line-through;
     text-decoration-color: red;
+}
+
+.modelContent {
+    padding: 30px;
+}
+
+.modelItem {
+    background: #5a5a5a;
+    color: #fff;
+    font-weight: 500;
+    height: 120px;
+    overflow: scroll;
+    text-align: left;
+}
+
+.close-circle {
+    font-size: 20px;
+    color: red;
+}
+
+.check-circle {
+    font-size: 20px;
+    color: green;
+}
+
+.pressureBtn {
+    margin-top: 25px;
 }

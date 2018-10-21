@@ -1,0 +1,13 @@
+.bodyContent {
+    background: #5a5a5a;
+    color: #fff;
+    font-weight: 500;
+    height: 120px;
+    overflow: scroll;
+}
+
+.formBody {
+    background: #5a5a5a;
+    color: #fff;
+    font-weight: 500;
+}

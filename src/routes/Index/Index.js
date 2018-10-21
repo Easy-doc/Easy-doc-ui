@@ -1,9 +1,10 @@
 import React from 'react';
-import { Layout, Menu, Row, Col, Divider, Input, Form, Modal} from 'antd';
-import { getMethod, base } from '../../config.js';
+import { Layout, Menu, Row, Col, Divider, Input, Modal, Form, Radio, Icon, Card, Tabs, Select} from 'antd';
+import { getMethod, pressureTest, pressure_url, getUrlList} from '../../config.js';
 import { Collapse } from 'antd';
 import { Button } from 'antd';
-import { getDefault } from '../util/util';
+import { jsonParse, getDefault, getPressureRes, getBtnBg } from '../util/util';
+import { defaultObj } from '../util/constant';
 import  FormContent  from '../common/FormContent/FormContent';
 import './Index.css';
 
@@ -11,6 +12,14 @@ const { Header, Content, Footer } = Layout;
 const Panel = Collapse.Panel;
 const { TextArea } = Input;
 const FormItem = Form.Item;
+const TabPane = Tabs.TabPane;
+const Option = Select.Option;
+
+const formItemLayout = {
+  labelCol: { span: 8},
+  wrapperCol: { span: 8 },
+};
+const RadioGroup = Radio.Group;
 class Index extends React.Component {
   constructor(props) {
     super(props);
@@ -19,7 +28,12 @@ class Index extends React.Component {
       value: '',
       pressureInfo: {},
       visible: false,
+      isGet: true, // 压力测试是否get,
+      urlList: []
     }
+    this.renderTitle = this.renderTitle.bind(this);
+    this.renderPressurelContent = this.renderPressurelContent.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
   }
 
   async componentDidMount() {
@@ -27,56 +41,123 @@ class Index extends React.Component {
     this.setState({ resource: resource.data });
   }
 
-  showModal = (e) => {
-    e.stopPropagation();
-    this.setState({ visible: true });
+  handleOk = () => {
+    this.setState({
+      visible: false
+    })
   }
 
-  handleOk = (e) => {
-    console.log(e);
+  async handleFocus() {
+    const urlList = await getUrlList();
     this.setState({
-      visible: false,
-    });
+      urlList: urlList.data
+    })
   }
 
-handleCancel = (e) => {
-    console.log(e);
-    this.setState({
-      visible: false,
+  async handleSubmit(e)  {
+    e.preventDefault();
+    let body = {};
+    let param = '';
+    let url = '';
+    this.props.form.validateFields((err, values) => {
+      if(!err) {
+        Object.keys(values).forEach(item => {
+          if(item === 'body') {
+            body = JSON.stringify(JSON.parse(values[item]));
+          }
+          else if(values[item] !== undefined) {
+            param += `${item}=${values[item]}&`;
+          }
+            url  = pressure_url  + '?' + param.substring(0, param.length-1);
+        })
+      }
     });
+    console.log('body', body)
+    const response = await pressureTest(url, body);
+    this.setState({
+      visible: true,
+      pressureInfo: response.success ? response.data : response,
+    })
   }
 
   defaultValue(body) {
     if(body === null) {
-      return '{\n "key" : "value" \n}';
+      return defaultObj;
     }
     const { fieldList } = body;
     var obj = {};
     fieldList && fieldList.forEach(item => obj[item.name] = getDefault(item.defaultValue, item.type));
-    return JSON.stringify(obj).replace(/,/g,',\n').replace(/^{/g, '{\n').replace(/}$/g, '\n}');
+    return jsonParse(obj);
   }
-//渲染菜单栏
+
+
+  // 压力测试是否为get方法
+  onChange = (e) => {
+    console.log('radio checked', e.target.value);
+    this.props.form.setFieldsValue({
+      isGet: e.target.value,
+    });
+  }
+
+  //渲染菜单栏
   renderMenu() {
     return (
-      <Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
+      <Header style={{ position: 'fixed', zIndex: 1, width: '100%', background: '#26292e' }}>
+      <div className="logo" />
         <Menu
           theme="dark"
           mode="horizontal"
           defaultSelectedKeys={['2']}
-          style={{ lineHeight: '64px' }}>
-        <Menu.Item key="1">nav 1</Menu.Item>
+          style={{ lineHeight: '64px', background: '#26292e' }}>
         </Menu>
       </Header>
     )
   }
-//渲染折叠面板内容
+
+  renderTitle() {
+    const {resource} = this.state;
+    const {name, description, contact} = resource;
+    return (
+      <div className="title">
+      {JSON.stringify(resource) !== '{}' ? 
+        (<div>
+          <div className="name">{name}</div>
+          <div className="description">
+            <Icon type="read" theme="outlined" />
+            &nbsp;
+            {description}</div>
+          <a className="concat" href={`mailto:${contact}`}>
+            <Icon type="mail" theme="outlined" />
+            &nbsp;
+            {contact}
+          </a>
+         </div>) 
+         : null}
+      </div>
+    )
+  }
+
+  renderTabs() {
+    return (
+      <Content style={{ padding: '0 50px', marginTop: 94}}>
+          <div className='container'>
+          {this.renderTitle()}
+          <Tabs className="tabs" size="large">
+            <TabPane tab="接口列表" key="1">{this.renderContent()}</TabPane>
+            <TabPane tab="Models" key="2">{this.renderModel()}</TabPane>
+            <TabPane tab="压力测试" key="3">{this.renderPressurelContent()}</TabPane>
+          </Tabs>
+      </div>
+    </Content>
+    )
+  }
+
+  //渲染折叠面板内容
   renderContent() {
-    const { resource } = this.state;
-    const { controllerList } = resource;
+    const {resource} = this.state;
+    const {controllerList} = resource;
     return(
-      <Content style={{ padding: '0 50px', marginTop: 94 }}>
-      <div className='container'>
-          <Collapse bordered={false} defaultActiveKey={['1']} className='collapse'>
+          <Collapse bordered={false} defaultActiveKey={['1']} className='collapse' accordion>
           {controllerList && controllerList.map((item, index) => (
             <Panel header={this.renderContentItem(item)} key={`panel`+index}>
               {item.methodList && item.methodList.map((contentItem, index) => (
@@ -85,17 +166,16 @@ handleCancel = (e) => {
             </Panel>
           ))}
           </Collapse>
-      </div>
-    </Content>
     )
   }
-//子panel的内容
+
+  //子panel的内容
   renderPanelContent(contentItem, index, item) {
     const path = item.path + contentItem.path;
     const { paramList, responseList, body, type } = contentItem;
     return(
-      <Collapse accordion key={`col-${index}`}>
-        <Panel header={this.renderPanelContentHead(contentItem)}  showArrow={false}>
+      <Collapse accordion key={`col-${index}`} bordered={false} showArrow={false}>
+        <Panel header={this.renderPanelContentHead(contentItem)}>
           <Row className="subPanel">
             <Col>参数</Col>
             <Divider/>
@@ -118,9 +198,10 @@ handleCancel = (e) => {
                 <Col span={12}>{item.description}</Col>
               </Row>
               {item.fieldMap && Object.keys(item.fieldMap).map(field => (
-                <Row><Col span={12}></Col>
-                      <Col span={12}>{field} : {item.fieldMap[field]}</Col>
-                </Row>
+              <Row>
+                <Col span={12}></Col>
+                <Col span={12}>{field} : {item.fieldMap[field]}</Col>
+              </Row>
               ))}
               </div>
             ))}
@@ -129,64 +210,163 @@ handleCancel = (e) => {
     </Collapse>
     )
   }
-//子panel的主体内容
-  renderSubPanelContent() {
-
+  
+  renderPressureRes() {
+    const {pressureInfo} = this.state;
+    const res = getPressureRes(pressureInfo);
+    return (
+      <Modal
+        title="压力测试结果"
+        visible={this.state.visible}
+        onOk={this.handleOk}
+        onCancel={this.handleOk}
+      >
+        <pre className='modelItem'>
+        {getPressureRes && Object.keys(res).map(item =>
+          <Row>
+            <Col span={8}>{item}</Col>
+            <Col span={8}>{res[item]}</Col>
+          </Row>)}
+        </pre>
+      </Modal>)
   }
-//子panel内容的头部
-  renderPanelContentHead(contentItem) {
+  // 压力测试内容
+  renderPressurelContent() {
     const {getFieldDecorator} = this.props.form;
+    const {urlList} = this.state;
+    const obj = {params: {}, body: {}};
     return(
-      <div className="panel">
-        <div>
-        <Button type="primary" className="panelButton">{contentItem.type}</Button>
-        <span className={contentItem.deprecated ? 'deprecated' : null}>{contentItem.path}  {contentItem.description}</span>
-        </div>
-        <Button type="default" className="pressButton" onClick={this.showModal}>压力测试</Button>
-        <Modal 
-          title="Basic Modal"
-          visible={this.state.visible}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
+      <div>
+      <Form onSubmit={this.handleSubmit.bind(this)}>
+        <FormItem label="请求数量" {...formItemLayout}>
+        {getFieldDecorator('n', {initialValue: 1})(
+          <Input size="large" />
+        )}
+        </FormItem>
+        <FormItem label="并发数量" {...formItemLayout}>
+        {getFieldDecorator('c', {initialValue: 1})(
+          <Input size="large" />
+        )}
+        </FormItem>
+        <FormItem label="cookie" {...formItemLayout}>
+        {getFieldDecorator('cookie', {})(
+          <Input size="large" />
+        )}
+        </FormItem>
+        <FormItem label="是否为get" {...formItemLayout}>
+        {getFieldDecorator('isGet', {initialValue: true})(
+          <RadioGroup onChange={this.onChange}>
+            <Radio value={true}>是</Radio>
+            <Radio value={false}>否</Radio>
+          </RadioGroup>
+        )}
+        </FormItem>
+        <FormItem label="请求地址" {...formItemLayout}>
+        {getFieldDecorator('url')(
+          <Select
+            showSearch
+            style={{ width: '100%' }}
+            placeholder="选择请求地址"
+            onFocus={this.handleFocus}
+            size='large'
         >
-          <Form>
-            <FormItem label="请求数量">
-            {getFieldDecorator('n', {})(
-              <Input />
-            )}
-            </FormItem>
-          </Form>
-        </Modal>
+          {urlList && urlList.map(item => (
+            <Option value={item}>{item}</Option>
+          ))}
+          </Select>
+        )}
+        </FormItem>
+        <FormItem label="参数" {...formItemLayout}>
+        {getFieldDecorator('body', {initialValue: jsonParse(obj)})(
+          <TextArea rows={4} />
+        )}
+        <Button type="primary" htmlType="submit" block className="pressureBtn">
+          完成
+        </Button>
+        </FormItem>
+      </Form>
+      {this.renderPressureRes()}
       </div>
     )
   }
-//panel的头部描述
+
+  // renderAuthorize() {
+  //   return (
+  //     <Form>
+  //     </Form>)
+  // }
+  //子panel内容的头部
+  renderPanelContentHead(contentItem) {
+    return(
+      <div className="panel">
+        <div>
+        <Button type="primary" 
+          className="panelButton" 
+          style={{background: getBtnBg(contentItem.type)}}>
+          {contentItem.type}
+        </Button>
+        <span className={contentItem.deprecated ? 'deprecated' : null}>{contentItem.path}  {contentItem.description}</span>
+        </div>
+      </div>
+    )
+  }
+
+  //panel的头部描述
   renderContentItem(item) {
     return (<div className="panelItem">
-      <p><span className="name">{item.name}</span>
+      <p>
+          <span className="name">{item.name}</span>
           <span className="headPath">{item.path}</span>
           <span className="description">{item.description}</span>
       </p>
-      <p className="author">{`author:  ${item.author}`}</p>
+      <span className={item.author ? "author": ''}>{`${item.author}`}</span>
     </div>)
+  }
+
+  renderModel() {
+    const {resource} = this.state;
+    const {modelList} = resource;
+    return (
+        <Row gutter={16} className="modelContent">
+        {modelList && modelList.map(item => (
+          <Col span={6}>
+          <Card
+            title={item.name}
+            extra={<Icon
+                    className={item.deprecated === true ? "close-circle" : "check-circle"} 
+                    type={item.deprecated === true ? "close-circle" : "check-circle"} 
+                    theme="outlined" 
+                  />}
+            style={{ width: 300, marginBottom: '50px' }}
+          >
+            <pre
+              className="modelItem">
+              {this.defaultValue(item)}
+            </pre>
+          </Card>
+          </Col>
+        ))}
+        </Row>
+    )
   }
 
   renderFoot() {
     return(
       <Footer style={{ textAlign: 'center' }}>
-        Ant Design ©2018 Created by Ant UED
+        Easy-doc ©2018 Created by Stalary
       </Footer>
     )
   }
 
-    render() {
-         return (
-            <Layout>
-              {this.renderMenu()}
-              {this.renderContent()}
-              {this.renderFoot()}
-          </Layout>
-         )
-    }
+  render() {
+    return (
+      <Layout>
+        {this.renderMenu()}
+        {this.renderTabs()}
+        {this.renderFoot()}
+      </Layout>
+    )
+  }
 }
+
 export default Form.create()(Index);

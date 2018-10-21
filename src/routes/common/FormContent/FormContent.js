@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Form, Row, Col, Input, Button, Modal} from 'antd';
-import { getDefault } from '../../util/util';
-import { getRes, base } from '../../../config.js';
+import {getDefault, jsonParse, getBtnBg} from '../../util/util';
+import {getRes, base} from '../../../config.js';
+import {defaultObj} from '../../util/constant';
+import './FormContent.css'
 
 const FormItem = Form.Item;
 const { TextArea } = Input;
@@ -18,7 +20,7 @@ class FormContent extends React.Component {
         super(props);
         this.state = {
             visible: false,
-            res: {}
+            response: {} //返回结果
         }
     }
     showModal = () => {
@@ -43,12 +45,12 @@ class FormContent extends React.Component {
     
     defaultValue(body) {
         if(body === null) {
-          return '{\n "key" : "value" \n}';
+          return defaultObj;
         }
         const { fieldList } = body;
         var obj = {};
         fieldList && fieldList.forEach(item => obj[item.name] = getDefault(item.defaultValue, item.type));
-        return JSON.stringify(obj).replace(/,/g,',\n').replace(/^{/g, '{\n').replace(/}$/g, '\n}');
+        return jsonParse(obj);
     }
 
     async handleSubmit(e)  {
@@ -57,7 +59,7 @@ class FormContent extends React.Component {
         var body = {};
         var param = '';
         var url = '';
-         this.props.form.validateFields((err, values) => {
+        this.props.form.validateFields((err, values) => {
           if (!err) {   
             Object.keys(values).forEach(item => {
                 if(/^{\(.|\n\)*}$/g.test(values[item])) {
@@ -71,11 +73,11 @@ class FormContent extends React.Component {
         });
         const res =  await getRes(url, type, JSON.stringify(body));
         console.log('res', res, url, body);
-        this.setState({ res: res });
+        this.setState({ response: res });
     }
 
     render() {
-        const {formData, body} = this.props;
+        const {formData, body, type} = this.props;
         const {getFieldDecorator} = this.props.form;
         return (
             <Form onSubmit={this.handleSubmit.bind(this)}>
@@ -83,7 +85,11 @@ class FormContent extends React.Component {
                 <Row key={`row-${index}`} className="subPanelDetail" type="flex"  align="top">
                 <Col span={12}>
                     <span>{item.name}</span>
-                    <span v-if={item.required.toString()} className="required"> *required</span>
+                    <span 
+                        v-if={item.required.toString()} 
+                        className="required"> 
+                        *required
+                    </span>
                     <div className="paramType">{item.type}</div>
                 </Col>
                 <Col span={8}>
@@ -93,7 +99,7 @@ class FormContent extends React.Component {
                       {getFieldDecorator(item.name, {
                       initialValue: this.defaultValue(body)
                       })(
-                      <TextArea  rows={4} />
+                      <TextArea rows={4} className="formBody" />
                       )}
                       </FormItem>
                     ) : (
@@ -109,7 +115,15 @@ class FormContent extends React.Component {
               </Row>
           ))}
           <FormItem>
-              <Button type="primary" className="excute"  htmlType="submit" block onClick={this.showModal}>运行</Button>
+            <Button 
+                type="primary" 
+                className="excute"  
+                htmlType="submit"
+                style={{background: getBtnBg(type), border: 'none'}}
+                block onClick={this.showModal}
+            >
+                运行
+            </Button>
           </FormItem>
           <Modal
             title="Basic Modal"
@@ -117,7 +131,9 @@ class FormContent extends React.Component {
             onOk={this.handleOk}
             onCancel={this.handleCancel}
             >
-            <TextArea disabled  rows={6} value={JSON.stringify(this.state.res).replace(/,/g,',\n').replace(/^{/g, '{\n').replace(/}$/g, '\n}')}/>
+            <pre className="bodyContent">
+            {jsonParse(this.state.response)}
+            </pre>
         </Modal>
         </Form>)
     }
