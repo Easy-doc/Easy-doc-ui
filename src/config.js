@@ -1,4 +1,3 @@
-
 import 'whatwg-fetch';
 
 // 接口拼接地址
@@ -8,44 +7,47 @@ const base_url = base + '/easy-doc/resource';
 // 获取请求地址
 const getList = base + '/easy-doc/list';
 // 压力测试地址
-export const pressure_url =  base + '/easy-doc/pressureTest';
-const base_fetch = function (url, method, body){
-    const cookie = localStorage.getItem('cookie');
-    const token = localStorage.getItem('token');
-    const header = function () {
-        const obj = {   method: method,
-                        mode: 'cors',
-                        credentials: 'include',
-                        headers: {'Content-Type': 'application/json'}
-                    }
-        if(method === 'POST') {
-            obj['body'] = body;
-        }          
-    
-        if(cookie !== null && token !== null) {
-            obj.headers['Authorization'] = token;
-            obj.headers['Set-Cookie'] = cookie;
-        } else if(cookie !== null) {
-            obj.headers['Set-Cookies'] = cookie;
-        } else if (token !== null) {
-            obj.headers['Authorization'] = token;
-        }
-        return obj;
+export const pressure_url = base + '/easy-doc/pressureTest';
+const base_fetch = function(url, method, body) {
+  const cookie = localStorage.getItem('cookie');
+  const token = localStorage.getItem('token');
+  const header = function() {
+    const obj = {
+      method: method,
+      mode: 'cors',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    };
+    if (method === 'POST') {
+      obj['body'] = body;
     }
-    const res = fetch(url, header()).then(response => { return response.json() });
-    return res;
-}
+
+    if (cookie !== null && token !== null) {
+      obj.headers['Authorization'] = token;
+      obj.headers['Set-Cookie'] = cookie;
+    } else if (cookie !== null) {
+      obj.headers['Set-Cookies'] = cookie;
+    } else if (token !== null) {
+      obj.headers['Authorization'] = token;
+    }
+    return obj;
+  };
+  const res = fetch(url, header()).then(response => {
+    return response.json();
+  });
+  return res;
+};
 
 // get请求
-export const getMethod = function () {
-    return base_fetch(base_url, 'GET');
-}
-export const getRes = function (url, method, body) {
-    return base_fetch(url, method, body);
-}
-export const pressureTest = function(url,body) {
-    return base_fetch(url, 'POST', body);
-}
-export const getUrlList = function () { 
-    return base_fetch(getList, 'GET');
- }
+export const getMethod = function() {
+  return base_fetch(base_url, 'GET');
+};
+export const getRes = function(url, method, body) {
+  return base_fetch(url, method, body);
+};
+export const pressureTest = function(url, body) {
+  return base_fetch(url, 'POST', body);
+};
+export const getUrlList = function() {
+  return base_fetch(getList, 'GET');
+};
