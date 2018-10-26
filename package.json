@@ -52,7 +52,9 @@
     "format": "prettier --write '**/*.{js,css,md}'"
   },
   "devDependencies": {
-    "babel-plugin-import": "^1.9.1"
+    "babel-plugin-import": "^1.9.1",
+    "stylelint": "^9.6.0",
+    "stylelint-config-standard": "^18.2.0"
   },
   "jest": {
     "collectCoverageFrom": [

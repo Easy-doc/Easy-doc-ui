@@ -127,16 +127,8 @@ class Index extends React.Component {
       </Header>
     );
   }
-
-  renderTitle() {
-    const { resource } = this.state;
-    const { name, description, contact } = resource;
-    return (
-      <div className="title">
-        {JSON.stringify(resource) !== '{}' ? (
-          <div>
-            <div className="name">{name}</div>
-            <div className="description">
+  /**
+   *  <div className="description">
               <Icon type="read" theme="outlined" />
               &nbsp;
               {description}
@@ -146,6 +138,16 @@ class Index extends React.Component {
               &nbsp;
               {contact}
             </a>
+   */
+
+  renderTitle() {
+    const { resource } = this.state;
+    const { name, description, contact } = resource;
+    return (
+      <div className="title">
+        {JSON.stringify(resource) !== '{}' ? (
+          <div>
+            <div className="name">{name}</div>
           </div>
         ) : null}
       </div>
@@ -154,20 +156,19 @@ class Index extends React.Component {
 
   renderTabs() {
     return (
-      <Content style={{ padding: '0 50px', marginTop: 94 }}>
+      <Content style={{ padding: '0 50px', marginTop: 10, textAlign: 'left' }}>
         <div className="container">
-          {this.renderTitle()}
-          <Tabs className="tabs" size="large">
-            <TabPane tab="接口列表" key="1">
+          <Tabs className="tabs" type="card">
+            <TabPane tab="接口列表" key="1" className="tabs-1">
               {this.renderContent()}
             </TabPane>
-            <TabPane tab="Models" key="2">
+            <TabPane tab="Models" key="2" className="tabs-2">
               {this.renderModel()}
             </TabPane>
-            <TabPane tab="压力测试" key="3">
+            <TabPane tab="压力测试" key="3" className="tabs-3">
               {this.renderPressurelContent()}
             </TabPane>
-            <TabPane tab="Authorize" key="4">
+            <TabPane tab="Authorize" key="4" className="tabs-4">
               <Authorize />
             </TabPane>
           </Tabs>
@@ -388,6 +389,7 @@ class Index extends React.Component {
     return (
       <Layout>
         {this.renderMenu()}
+        {this.renderTitle()}
         {this.renderTabs()}
         {this.renderFoot()}
       </Layout>

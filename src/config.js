@@ -6,6 +6,8 @@ export const base = 'http://120.24.5.178:19960';
 const base_url = base + '/easy-doc/resource';
 // 获取请求地址
 const getList = base + '/easy-doc/list';
+// 添加cookie
+const cookieUrl = base + '/easy-doc/addCookie';
 // 压力测试地址
 export const pressure_url = base + '/easy-doc/pressureTest';
 const base_fetch = function(url, method, body) {
@@ -50,4 +52,7 @@ export const pressureTest = function(url, body) {
 };
 export const getUrlList = function() {
   return base_fetch(getList, 'GET');
+};
+export const addCookie = function(body) {
+  return base_fetch(cookieUrl, 'POST', body);
 };
