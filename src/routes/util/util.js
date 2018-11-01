@@ -11,6 +11,8 @@ export const getDefault = function(val, type) {
         return 0.0;
       case 'Boolean':
         return false;
+      case 'List':
+        return [];
       default:
         return;
     }

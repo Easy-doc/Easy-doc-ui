@@ -227,15 +227,14 @@ class Index extends React.Component {
                     <Col span={12}>{item.code}</Col>
                     <Col span={12}>{item.description}</Col>
                   </Row>
-                  {item.fieldMap &&
-                    Object.keys(item.fieldMap).map(field => (
+                  {item && item.fieldList &&
+                    item.fieldList.map(field => (
                       <Row>
-                        <Col span={12} />
-                        <Col span={12}>
-                          {field} : {item.fieldMap[field]}
-                        </Col>
-                      </Row>
-                    ))}
+                      <Col span={12}/>
+                      <Col span={12}>
+                        {field.name} : {field.description}
+                      </Col>
+                    </Row>))}
                 </div>
               ))}
           </Row>
@@ -350,6 +349,25 @@ class Index extends React.Component {
     );
   }
 
+  renderModelTable(model) {
+    return (
+      <div className='modelItem'>
+        <Row gutter={16}>
+          <Col span={8}>名称</Col>
+          <Col span={8}>类型</Col>
+          <Col span={8}>描述</Col>
+        </Row>
+      {model && model.map(modelItem => (
+        <Row>
+        <Col span={8}>{modelItem.name}</Col>
+        <Col span={8}>{modelItem.type}</Col>
+        <Col span={8}>{modelItem.description}</Col>
+        </Row>
+      ))}
+      </div>
+    )
+  }
+
   renderModel() {
     const { resource } = this.state;
     const { modelList } = resource;
@@ -369,7 +387,7 @@ class Index extends React.Component {
                 }
                 style={{ width: 300, marginBottom: '50px' }}
               >
-                <pre className="modelItem">{this.defaultValue(item)}</pre>
+                {this.renderModelTable(item.fieldList)}
               </Card>
             </Col>
           ))}

@@ -1,6 +1,6 @@
 import 'whatwg-fetch';
 
-// 接口拼接地址
+// 接口拼接地址http://120.24.5.178:19960'
 export const base = 'http://120.24.5.178:19960';
 // 获取接口文档的地址
 const base_url = base + '/easy-doc/resource';
@@ -23,15 +23,9 @@ const base_fetch = function(url, method, body) {
     if (method === 'POST') {
       obj['body'] = body;
     }
-
-    if (cookie !== null && token !== null) {
+    if (token !== null) {
       obj.headers['Authorization'] = token;
-      obj.headers['Set-Cookie'] = cookie;
-    } else if (cookie !== null) {
-      obj.headers['Set-Cookies'] = cookie;
-    } else if (token !== null) {
-      obj.headers['Authorization'] = token;
-    }
+    } 
     return obj;
   };
   const res = fetch(url, header()).then(response => {

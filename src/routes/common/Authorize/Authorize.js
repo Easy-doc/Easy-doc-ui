@@ -34,29 +34,25 @@ class Authorize extends React.Component {
 
   async handleAuthorize(e) {
     e.preventDefault();
-    let arr = [];
     let obj = {};
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        Object.keys(values).forEach(item => {
-          if (values[item] !== undefined) {
-            if (item === 'cookieKey1' || item === 'cookieValue1') {
-              arr.push(values[item]);
-            } else if (item === 'token') {
-              localStorage.setItem(item, values[item]);
+        Object.keys(values).forEach((item, index) => {
+              if (item === 'token') {
+                localStorage.setItem(item, values[item]);
+              } else  if ((/^cookieKey*/g).test(item)) {
+                obj[values[item]] = values[`cookieValue${index}`];
             }
-          }
         });
-        if (arr && arr.length !== 0) {
-          obj[arr[0]] = arr[1];
-          obj = JSON.stringify(obj);
-          localStorage.setItem('cookie', obj);
-        }
-        message.info('添加成功');
       }
     });
-    var res = await addCookie(JSON.parse(obj));
-    console.log(res);
+    console.log('obj', obj);
+    var res = await addCookie(JSON.stringify(obj));
+    if (res && res.success === true) {
+      message.info('添加成功');
+    } else {
+      message.info(res.message);
+    }
   }
 
   handleChange = e => {
