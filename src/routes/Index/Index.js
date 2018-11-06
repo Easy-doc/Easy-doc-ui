@@ -19,8 +19,9 @@ import { Collapse } from 'antd';
 import { Button } from 'antd';
 import { jsonParse, getDefault, getPressureRes, getBtnBg } from '../util/util';
 import { defaultObj } from '../util/constant';
-import FormContent from '../common/FormContent/FormContent';
-import Authorize from '../common/Authorize/Authorize';
+import FormContent from '../component/FormContent/FormContent';
+import Authorize from '../component/Authorize/Authorize';
+import Global from '../component/Global/Global';
 import './Index.css';
 
 const { Header, Content, Footer } = Layout;
@@ -170,6 +171,9 @@ class Index extends React.Component {
             </TabPane>
             <TabPane tab="Authorize" key="4" className="tabs-4">
               <Authorize />
+            </TabPane>
+            <TabPane tab="全局参数" key="5" className="tabs-5">
+              <Global />
             </TabPane>
           </Tabs>
         </div>
@@ -367,17 +371,18 @@ class Index extends React.Component {
       </div>
     )
   }
-
+  // 渲染model卡片
   renderModel() {
     const { resource } = this.state;
     const { modelList } = resource;
     return (
-      <Row gutter={16} className="modelContent">
+      <Row className="modelContent">
         {modelList &&
           modelList.map(item => (
-            <Col span={6}>
+            <Col span={8}>
               <Card
-                title={item.name}
+                hoverable
+                title={item.name + ' ' + item.description}
                 extra={
                   <Icon
                     className={item.deprecated === true ? 'close-circle' : 'check-circle'}
@@ -385,7 +390,7 @@ class Index extends React.Component {
                     theme="outlined"
                   />
                 }
-                style={{ width: 300, marginBottom: '50px' }}
+                style={{ width: 360, marginBottom: '50px' }}
               >
                 {this.renderModelTable(item.fieldList)}
               </Card>

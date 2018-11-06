@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button, message, Row, Col } from 'antd';
+import { Form, Input, Button, message, Row, Col, Icon } from 'antd';
 import { addCookie } from '../../../config';
 import './Authorize.css';
 
@@ -46,7 +46,6 @@ class Authorize extends React.Component {
         });
       }
     });
-    console.log('obj', obj);
     var res = await addCookie(JSON.stringify(obj));
     if (res && res.success === true) {
       message.info('添加成功');
@@ -55,23 +54,9 @@ class Authorize extends React.Component {
     }
   }
 
-  handleChange = e => {
-    const key = e.target.value || '';
-    if (!('value' in this.props)) {
-      this.setState({ key: key });
-    }
-    console.log('keyahahha', this.state.key);
-    this.triggerChange({ key });
-  };
-
-  triggerChange = changedValue => {
-    // Should provide an event to pass value to Form.
-    const onChange = this.props.onChange;
-    console.log('onChange', this.props);
-    if (onChange) {
-      onChange(Object.assign({}, this.state, changedValue));
-    }
-  };
+  handleDelete = () => {
+    const { num } = this.state;
+  }
 
   handleClick() {
     const { getFieldDecorator } = this.props.form;
@@ -87,15 +72,16 @@ class Authorize extends React.Component {
         {getFieldDecorator(`cookieValue${num}`)(
           <Col span={12}>
             <Input placeholder="value" />
+            <span className="delete" onClick={this.handleDelete.bind(this)}><Icon type="close-circle" theme="outlined" /></span>
           </Col>
         )}
       </Row>
     );
   }
 
-  initailCookie() {
+  initailCookie(arg) {
     const { getFieldDecorator } = this.props.form;
-    let { num, key, value } = this.state;
+    let { num } = this.state;
     time++;
     if (time === 1) {
       children.push(
@@ -106,8 +92,10 @@ class Authorize extends React.Component {
             </Col>
           )}
           {getFieldDecorator(`cookieValue${num}`)(
-            <Col span={12}>
+            <Col span={12} style={{ position: 'relative'}}>
               <Input placeholder="value" />
+              <span className="delete" onClick={this.handleDelete.bind(this)}>
+              <Icon type="close-circle" theme="outlined" /></span>
             </Col>
           )}
         </Row>
@@ -124,13 +112,27 @@ class Authorize extends React.Component {
           {getFieldDecorator('token')(<TextArea row={6} />)}
         </FormItem>
         <FormItem label="Cookie" {...formItemLayout}>
-          <Button type="defalut" className="addBtn" onClick={this.handleClick.bind(this)}>
-            Add
-          </Button>
           {this.initailCookie()}
-          <Button type="primary" block htmlType="submit" className="pressureBtn">
+          <Row gutter={16}>
+            <Col span={12}>
+              <Button 
+              type="primary" 
+              block 
+              htmlType="submit" 
+              className="pressureBtn">
             完成
           </Button>
+          </Col>
+          <Col span={12}>
+          <Button
+            className="pressureBtn"
+            block
+            type="defalut" 
+            onClick={this.handleClick.bind(this)}>
+            继续添加
+          </Button>
+          </Col>
+          </Row>
         </FormItem>
       </Form>
     );
