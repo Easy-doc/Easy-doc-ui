@@ -22,7 +22,7 @@ import { defaultObj } from '../util/constant';
 import FormContent from '../component/FormContent/FormContent';
 import Authorize from '../component/Authorize/Authorize';
 import Global from '../component/Global/Global';
-import './Index.css';
+import './Home.css';
 
 const { Header, Content, Footer } = Layout;
 const Panel = Collapse.Panel;
@@ -54,7 +54,7 @@ class Index extends React.Component {
 
   async componentDidMount() {
     const resource = await getMethod();
-    this.setState({ resource: resource.data });
+    this.setState({ resource: resource.data || {} });
   }
 
   handleOk = () => {
@@ -87,7 +87,6 @@ class Index extends React.Component {
         });
       }
     });
-    console.log('body', body);
     const response = await pressureTest(url, body);
     this.setState({
       visible: true,
@@ -108,7 +107,6 @@ class Index extends React.Component {
 
   // 压力测试是否为get方法
   onChange = e => {
-    console.log('radio checked', e.target.value);
     this.props.form.setFieldsValue({
       isGet: e.target.value,
     });
@@ -128,22 +126,10 @@ class Index extends React.Component {
       </Header>
     );
   }
-  /**
-   *  <div className="description">
-              <Icon type="read" theme="outlined" />
-              &nbsp;
-              {description}
-            </div>
-            <a className="concat" href={`mailto:${contact}`}>
-              <Icon type="mail" theme="outlined" />
-              &nbsp;
-              {contact}
-            </a>
-   */
 
   renderTitle() {
-    const { resource } = this.state;
-    const { name, description, contact } = resource;
+    const { resource = {} } = this.state;
+    const { name = '' } = resource;
     return (
       <div className="title">
         {JSON.stringify(resource) !== '{}' ? (
@@ -183,7 +169,7 @@ class Index extends React.Component {
 
   //渲染折叠面板内容
   renderContent() {
-    const { resource } = this.state;
+    const { resource = {} } = this.state;
     const { controllerList } = resource;
     return (
       <Collapse bordered={false} defaultActiveKey={['1']} className="collapse" accordion>
@@ -231,14 +217,16 @@ class Index extends React.Component {
                     <Col span={12}>{item.code}</Col>
                     <Col span={12}>{item.description}</Col>
                   </Row>
-                  {item && item.fieldList &&
+                  {item &&
+                    item.fieldList &&
                     item.fieldList.map(field => (
                       <Row>
-                      <Col span={12}/>
-                      <Col span={12}>
-                        {field.name} : {field.description}
-                      </Col>
-                    </Row>))}
+                        <Col span={12} />
+                        <Col span={12}>
+                          {field.name} : {field.description}
+                        </Col>
+                      </Row>
+                    ))}
                 </div>
               ))}
           </Row>
@@ -355,25 +343,26 @@ class Index extends React.Component {
 
   renderModelTable(model) {
     return (
-      <div className='modelItem'>
+      <div className="modelItem">
         <Row gutter={16}>
           <Col span={8}>名称</Col>
           <Col span={8}>类型</Col>
           <Col span={8}>描述</Col>
         </Row>
-      {model && model.map(modelItem => (
-        <Row>
-        <Col span={8}>{modelItem.name}</Col>
-        <Col span={8}>{modelItem.type}</Col>
-        <Col span={8}>{modelItem.description}</Col>
-        </Row>
-      ))}
+        {model &&
+          model.map(modelItem => (
+            <Row>
+              <Col span={8}>{modelItem.name}</Col>
+              <Col span={8}>{modelItem.type}</Col>
+              <Col span={8}>{modelItem.description}</Col>
+            </Row>
+          ))}
       </div>
-    )
+    );
   }
   // 渲染model卡片
   renderModel() {
-    const { resource } = this.state;
+    const { resource = {} } = this.state;
     const { modelList } = resource;
     return (
       <Row className="modelContent">
