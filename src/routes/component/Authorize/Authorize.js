@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button, message, Row, Col, Icon } from 'antd';
+import { Form, Input, Button, message, Row, Col, Icon, Tooltip } from 'antd';
 import { addCookie } from '../../../config';
 import './Authorize.css';
 
@@ -9,19 +9,10 @@ const formItemLayout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 8 },
 };
-const children = [];
-let time = 0;
+/** 
+ * Authorize 设置cookie和token
+*/
 class Authorize extends React.Component {
-  static getDerivedStateFromProps(nextProps) {
-    // Should be a controlled component.
-    if ('value' in nextProps) {
-      return {
-        ...(nextProps.value || {}),
-      };
-    }
-    return null;
-  }
-
   constructor(props) {
     super(props);
     const value = props.value || {};
@@ -29,21 +20,27 @@ class Authorize extends React.Component {
       num: 1,
       key: value.key,
       value: value.value,
+      children: [],
     };
+  }
+
+  componentDidMount() {
+    this.initailCookie();
   }
 
   async handleAuthorize(e) {
     e.preventDefault();
     let obj = {};
+    let len = 0;
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        Object.keys(values).forEach((item, index) => {
-              if (item === 'token') {
-                localStorage.setItem(item, values[item]);
-              } else  if ((/^cookieKey*/g).test(item)) {
-                obj[values[item]] = values[`cookieValue${index}`];
-            }
-        });
+        if (values['token'] !== undefined) {
+          localStorage.setItem('token', values['token']);
+        }
+        len = Math.floor((Object.keys(values).length - 1) / 2);
+        for (let i = 0; i < len; i++) {
+          obj[`${values[`cookieKey${i}`]}`] = values[`cookieValue${i}`];
+        }
       }
     });
     var res = await addCookie(JSON.stringify(obj));
@@ -55,13 +52,14 @@ class Authorize extends React.Component {
   }
 
   handleDelete = () => {
-    const { num } = this.state;
-  }
+    let { num, children } = this.state;
+    children.splice(num - 1, 1);
+    this.setState({ children: children, num: --num });
+  };
 
   handleClick() {
     const { getFieldDecorator } = this.props.form;
-    let { num } = this.state;
-    this.setState({ num: ++num });
+    let { num, children } = this.state;
     children.push(
       <Row gutter={16} key={`row-${num}`}>
         {getFieldDecorator(`cookieKey${num}`)(
@@ -72,67 +70,71 @@ class Authorize extends React.Component {
         {getFieldDecorator(`cookieValue${num}`)(
           <Col span={12}>
             <Input placeholder="value" />
-            <span className="delete" onClick={this.handleDelete.bind(this)}><Icon type="close-circle" theme="outlined" /></span>
+            <span className="delete" onClick={this.handleDelete.bind(this)}>
+              <Icon type="close-circle" theme="outlined" />
+            </span>
           </Col>
         )}
       </Row>
     );
+    this.setState({ children: children, num: ++num });
   }
 
-  initailCookie(arg) {
+  initailCookie() {
     const { getFieldDecorator } = this.props.form;
-    let { num } = this.state;
-    time++;
-    if (time === 1) {
-      children.push(
-        <Row gutter={16} key={`row-${num}`}>
-          {getFieldDecorator(`cookieKey${num}`)(
+    let temp = [];
+    temp.push(
+      <Row gutter={16} key={`row-0`}>
+        {getFieldDecorator(`cookieKey0`)(
+          <Col span={12}>
+            <Input placeholder="key" />
+          </Col>
+        )}
+        {getFieldDecorator(`cookieValue0`)(
+          <Col span={12} style={{ position: 'relative' }}>
+            <Input placeholder="value" />
+          </Col>
+        )}
+      </Row>
+    );
+    this.setState({ children: temp });
+  }
+
+  renderButton() {
+    return (
+      <Row gutter={16}>
             <Col span={12}>
-              <Input placeholder="key" />
+            <Tooltip placement="topLeft" title="需要修改或删除的操作，在表单内修改后点击完成按钮完成">
+              <Button type="primary" block htmlType="submit" className="pressureBtn">
+                完成
+              </Button>
+            </Tooltip>
             </Col>
-          )}
-          {getFieldDecorator(`cookieValue${num}`)(
-            <Col span={12} style={{ position: 'relative'}}>
-              <Input placeholder="value" />
-              <span className="delete" onClick={this.handleDelete.bind(this)}>
-              <Icon type="close-circle" theme="outlined" /></span>
+            <Col span={12}>
+              <Button
+                className="pressureBtn"
+                block
+                type="defalut"
+                onClick={this.handleClick.bind(this)}
+              >
+                继续添加
+              </Button>
             </Col>
-          )}
-        </Row>
-      );
-    }
-    return children;
+      </Row>
+    )
   }
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { children } = this.state;
     return (
       <Form onSubmit={this.handleAuthorize.bind(this)}>
         <FormItem label="Token" {...formItemLayout}>
           {getFieldDecorator('token')(<TextArea row={6} />)}
         </FormItem>
         <FormItem label="Cookie" {...formItemLayout}>
-          {this.initailCookie()}
-          <Row gutter={16}>
-            <Col span={12}>
-              <Button 
-              type="primary" 
-              block 
-              htmlType="submit" 
-              className="pressureBtn">
-            完成
-          </Button>
-          </Col>
-          <Col span={12}>
-          <Button
-            className="pressureBtn"
-            block
-            type="defalut" 
-            onClick={this.handleClick.bind(this)}>
-            继续添加
-          </Button>
-          </Col>
-          </Row>
+          {children && children.map(item => item)}
+          {this.renderButton()}
         </FormItem>
       </Form>
     );

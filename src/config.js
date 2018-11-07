@@ -11,8 +11,10 @@ const cookieUrl = base + '/easy-doc/addCookie';
 // 压力测试地址
 export const pressure_url = base + '/easy-doc/pressureTest';
 const base_fetch = function(url, method, body) {
-  const cookie = localStorage.getItem('cookie');
+  const globalParam = localStorage.getItem('globalParam');
   const token = localStorage.getItem('token');
+  const symbol = url.indexOf('?') !== -1 ? '&' : '?';
+  url = globalParam !== null ? url + symbol + globalParam : url;
   const header = function() {
     const obj = {
       method: method,
@@ -25,12 +27,14 @@ const base_fetch = function(url, method, body) {
     }
     if (token !== null) {
       obj.headers['Authorization'] = token;
-    } 
+    }
     return obj;
   };
-  const res = fetch(url, header()).then(response => {
-    return response.json();
-  });
+  const res = fetch(url, header())
+    .then(response => {
+      return response.json();
+    })
+    .catch(e => console.log('错误提示', e));
   return res;
 };
 

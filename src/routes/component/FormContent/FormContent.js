@@ -72,10 +72,12 @@ class FormContent extends React.Component {
         url = base + path + '?' + param.substring(0, param.length - 1);
       }
     });
-    console.log('url', url, 'type', type, 'boyd', body);
-    const res = await getRes(url, type, JSON.stringify(body));
-    console.log('res', res, url, body);
-    this.setState({ response: res });
+    try {
+      const res = await getRes(url, type, JSON.stringify(body));
+      this.setState({ response: res || {} });
+    } catch (e) {
+      console.log('压力测试', e);
+    }
   }
 
   render() {
@@ -129,7 +131,7 @@ class FormContent extends React.Component {
           onOk={this.handleOk}
           onCancel={this.handleCancel}
         >
-          <pre className="bodyContent">{jsonParse(this.state.response)}</pre>
+          <pre className="bodyContent">{jsonParse(this.state.response || {})}</pre>
         </Modal>
       </Form>
     );
