@@ -1,19 +1,5 @@
 import React from 'react';
-import {
-  Layout,
-  Menu,
-  Row,
-  Col,
-  Divider,
-  Input,
-  Modal,
-  Form,
-  Radio,
-  Icon,
-  Card,
-  Tabs,
-  Select,
-} from 'antd';
+import { Layout, Menu, Row, Col, Divider, Input, Modal, Form, Radio, Tabs, Select } from 'antd';
 import { getMethod, pressureTest, pressure_url, getUrlList } from '../../config.js';
 import { Collapse } from 'antd';
 import { Button } from 'antd';
@@ -46,9 +32,11 @@ class Index extends React.Component {
       visible: false,
       isGet: true, // 压力测试是否get,
       urlList: [],
+      modelVisble: false,
+      field: {},
     };
     this.renderTitle = this.renderTitle.bind(this);
-    this.renderPressurelContent = this.renderPressurelContent.bind(this);
+    this.c = this.renderPressurelContent.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
   }
 
@@ -60,6 +48,18 @@ class Index extends React.Component {
   handleOk = () => {
     this.setState({
       visible: false,
+    });
+  };
+
+  handleModelOk = () => {
+    this.setState({
+      modelVisble: false,
+    });
+  };
+
+  handleModelCancel = () => {
+    this.setState({
+      modelVisble: false,
     });
   };
 
@@ -112,6 +112,12 @@ class Index extends React.Component {
     });
   };
 
+  showModal(field) {
+    const { data } = field;
+    if (data && JSON.stringify(data) !== '{}') {
+      this.setState({ modelVisble: true, field: data });
+    }
+  }
   //渲染菜单栏
   renderMenu() {
     return (
@@ -223,8 +229,14 @@ class Index extends React.Component {
                       <Row>
                         <Col span={12} />
                         <Col span={12}>
-                          {field.name} : {field.description}
+                          <p
+                            onClick={this.showModal.bind(this, field)}
+                            className={field.data ? 'pointer' : ''}
+                          >
+                            {field.name} : {field.description}
+                          </p>
                         </Col>
+                        {this.renderModelDialog()}
                       </Row>
                     ))}
                 </div>
@@ -254,6 +266,21 @@ class Index extends React.Component {
               </Row>
             ))}
         </pre>
+      </Modal>
+    );
+  }
+
+  renderModelDialog() {
+    const { field = {}, modelVisble } = this.state;
+    const { fieldList = [] } = field;
+    return (
+      <Modal
+        title="Model"
+        visible={modelVisble}
+        onOk={this.handleModelOk}
+        onCancel={this.handleModelCancel}
+      >
+        {this.renderModelTable(fieldList)}
       </Modal>
     );
   }
@@ -344,17 +371,17 @@ class Index extends React.Component {
   renderModelTable(model) {
     return (
       <div className="modelItem">
-        <Row gutter={16}>
-          <Col span={8}>名称</Col>
-          <Col span={8}>类型</Col>
-          <Col span={8}>描述</Col>
+        <Row justify="space-around" type="flex" className="col">
+          <Col span={6}>名称</Col>
+          <Col span={6}>类型</Col>
+          <Col span={6}>描述</Col>
         </Row>
         {model &&
           model.map(modelItem => (
-            <Row>
-              <Col span={8}>{modelItem.name}</Col>
-              <Col span={8}>{modelItem.type}</Col>
-              <Col span={8}>{modelItem.description}</Col>
+            <Row justify="space-around" type="flex" className="col">
+              <Col span={6}>{modelItem.name}</Col>
+              <Col span={6}>{modelItem.type}</Col>
+              <Col span={6}>{modelItem.description}</Col>
             </Row>
           ))}
       </div>
@@ -365,27 +392,24 @@ class Index extends React.Component {
     const { resource = {} } = this.state;
     const { modelList } = resource;
     return (
-      <Row className="modelContent">
+      <Collapse className="collapse" bordered={false}>
         {modelList &&
           modelList.map(item => (
-            <Col span={8}>
-              <Card
-                hoverable
-                title={item.name + ' ' + item.description}
-                extra={
-                  <Icon
-                    className={item.deprecated === true ? 'close-circle' : 'check-circle'}
-                    type={item.deprecated === true ? 'close-circle' : 'check-circle'}
-                    theme="outlined"
-                  />
-                }
-                style={{ width: 360, marginBottom: '50px' }}
-              >
-                {this.renderModelTable(item.fieldList)}
-              </Card>
-            </Col>
+            <Panel
+              className="modelPanel"
+              hoverable
+              header={
+                <div>
+                  <span className={item.deprecated === false ? '' : 'deleteText'}>{item.name}</span>
+                  &nbsp;&nbsp;
+                  <span className="modelDesciption">{item.description}</span>
+                </div>
+              }
+            >
+              {this.renderModelTable(item.fieldList)}
+            </Panel>
           ))}
-      </Row>
+      </Collapse>
     );
   }
 

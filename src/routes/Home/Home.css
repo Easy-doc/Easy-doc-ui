@@ -77,7 +77,6 @@
   font-size: 30px;
   font-weight: 500;
   margin: 0 10px;
-  line-height: 88px;
 }
 
 .panelItem .headPath {
@@ -93,6 +92,7 @@
   height: fit-content;
   float: right;
   font-size: 20px;
+  line-height: 20px;
   margin: 33px 20px;
   padding: 4px 7px;
   border-radius: 17px;
@@ -102,8 +102,6 @@
 
 .subPanel {
   text-align: left;
-  /* border: 1px solid red; */
-  /* margin: 0 10px; */
   font-size: 20px;
   font-weight: 500;
 }
@@ -132,18 +130,22 @@
   text-decoration-color: red;
 }
 
-.modelContent {
-  padding: 20px;
+.modelPanel {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  line-height: 88px;
 }
 
 .modelItem {
   background: #5a5a5a;
   color: #fff;
   font-weight: 500;
-  height: 120px;
+  font-size: 20px;
+  min-height: 120px;
   width: 100%;
-  overflow: scroll;
-  text-align: center;
 }
 
 .close-circle {
@@ -184,4 +186,22 @@
   border-color: #fff;
   background: #fff;
   color: black;
+}
+
+.col {
+  margin-bottom: 10px;
+}
+
+.modelDesciption {
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.deleteText {
+  text-decoration: line-through;
+}
+
+.pointer {
+  cursor: pointer;
+  color: #92ad9f;
 }

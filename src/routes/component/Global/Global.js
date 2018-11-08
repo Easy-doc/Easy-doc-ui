@@ -92,28 +92,25 @@ class Global extends React.Component {
   renderButton() {
     return (
       <Row gutter={16}>
-            <Col span={12}>
-            <Tooltip placement="topLeft" title="需要修改或删除的操作，在表单内修改后点击完成按钮完成">
-              <Button 
-                type="primary" 
-                block htmlType="submit" 
-                className="pressureBtn">
-                完成
-              </Button>
-            </Tooltip>
-            </Col>
-            <Col span={12}>
-              <Button
-                className="pressureBtn"
-                block
-                type="defalut"
-                onClick={this.handleClick.bind(this)}
-              >
-                继续添加
-              </Button>
-            </Col>
+        <Col span={12}>
+          <Tooltip placement="topLeft" title="需要修改或删除的操作，在表单内修改后点击完成按钮完成">
+            <Button type="primary" block htmlType="submit" className="pressureBtn">
+              完成
+            </Button>
+          </Tooltip>
+        </Col>
+        <Col span={12}>
+          <Button
+            className="pressureBtn"
+            block
+            type="defalut"
+            onClick={this.handleClick.bind(this)}
+          >
+            继续添加
+          </Button>
+        </Col>
       </Row>
-    )
+    );
   }
 
   render() {

@@ -1,7 +1,9 @@
-
 # Easy-doc-ui
-简单易用的java接口文档生成器，基于react的前端页面
+
+简单易用的 java 接口文档生成器，基于 react 的前端页面
+
 ## 结构介绍
+
 ```
 .
 ├── LICENSE
@@ -36,8 +38,7 @@
 ├── yarn-error.log
 └── yarn.lock
 ```
+
 ## 技术架构
-React 
 
-
-
+React

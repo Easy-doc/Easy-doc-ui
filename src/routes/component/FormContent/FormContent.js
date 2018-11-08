@@ -90,9 +90,7 @@ class FormContent extends React.Component {
             <Row key={`row-${index}`} className="subPanelDetail" type="flex" align="top">
               <Col span={12}>
                 <span>{item.name}</span>
-                <span v-if={item.required.toString()} className="required">
-                  *required
-                </span>
+                <span className={item.required ? 'required' : 'notShow'}>*required</span>
                 <div className="paramType">{item.type}</div>
               </Col>
               <Col span={8}>
