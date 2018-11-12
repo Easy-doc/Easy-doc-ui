@@ -279,6 +279,7 @@ class Index extends React.Component {
         visible={modelVisble}
         onOk={this.handleModelOk}
         onCancel={this.handleModelCancel}
+        width={650}   
       >
         {this.renderModelTable(fieldList)}
       </Modal>

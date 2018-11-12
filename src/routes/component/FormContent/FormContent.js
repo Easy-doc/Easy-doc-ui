@@ -124,7 +124,7 @@ class FormContent extends React.Component {
           </Button>
         </FormItem>
         <Modal
-          title="Basic Modal"
+          title="Result"
           visible={this.state.visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
