@@ -10,32 +10,36 @@ const formItemLayout = {
 class Global extends React.Component {
   constructor(props) {
     super(props);
-    const value = props.value || {};
     this.state = {
       num: 1,
-      key: value.key,
-      value: value.value,
       children: [],
     };
   }
 
   componentDidMount() {
     this.initailGlobal();
+    
   }
 
   async handleAuthorize(e) {
     e.preventDefault();
     let urlParams = '';
     let len = 0;
+    const data = {};
     this.props.form.validateFields((err, values) => {
       if (!err) {
         len = Object.keys(values).length;
         len = Math.floor(len / 2);
         for (let i = 0; i < len; i++) {
-          urlParams += values[`globalKey${i}`] + '=' + values[`globalValue${i}`] + '&';
+          if(values[`globalKey${i}`] && values[`globalValue${i}`]) {
+            urlParams += values[`globalKey${i}`] + '=' + values[`globalValue${i}`] + '&';
+            data.values[`globalKey${i}`] = values[`globalValue${i}`];
+          }
         }
-        localStorage.setItem('globalParam', urlParams.replace(/&$/g, ''));
-        message.info('添加完成');
+        if (urlParams) {
+          localStorage.setItem('globalParam', urlParams.replace(/&$/g, ''));
+          message.info('添加完成');
+        }
       }
     });
   }

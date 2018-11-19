@@ -42,7 +42,7 @@ class Index extends React.Component {
 
   async componentDidMount() {
     const resource = await getMethod();
-    this.setState({ resource: resource.data || {} });
+    this.setState({ resource: resource && resource.data });
   }
 
   handleOk = () => {
@@ -279,7 +279,7 @@ class Index extends React.Component {
         visible={modelVisble}
         onOk={this.handleModelOk}
         onCancel={this.handleModelCancel}
-        width={650}   
+        width={650}
       >
         {this.renderModelTable(fieldList)}
       </Modal>
