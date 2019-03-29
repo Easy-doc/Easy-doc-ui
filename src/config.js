@@ -1,7 +1,6 @@
 import 'whatwg-fetch';
-
-// 接口拼接地址http://120.24.5.178:19960'
-export const base = 'http://120.24.5.178:19960';
+const context_path = document.location.pathname.split('/')[1] === 'easy-doc.html' ? '' : '/' + document.location.pathname.split('/')[1];
+export const base = window.location.origin + context_path;
 // 获取接口文档的地址
 const base_url = base + '/easy-doc/resource';
 // 获取请求地址

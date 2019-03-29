@@ -42,7 +42,7 @@ class Index extends React.Component {
 
   async componentDidMount() {
     const resource = await getMethod();
-    this.setState({ resource: resource.data || {} });
+    this.setState({ resource: resource == null ? {} : resource.data});
   }
 
   handleOk = () => {
@@ -160,9 +160,6 @@ class Index extends React.Component {
             </TabPane>
             <TabPane tab="压力测试" key="3" className="tabs-3">
               {this.renderPressurelContent()}
-            </TabPane>
-            <TabPane tab="Authorize" key="4" className="tabs-4">
-              <Authorize />
             </TabPane>
             <TabPane tab="全局参数" key="5" className="tabs-5">
               <Global />

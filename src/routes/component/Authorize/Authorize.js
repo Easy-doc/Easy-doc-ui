@@ -131,9 +131,6 @@ class Authorize extends React.Component {
       <Form onSubmit={this.handleAuthorize.bind(this)}>
         <FormItem label="Token" {...formItemLayout}>
           {getFieldDecorator('token')(<TextArea row={6} />)}
-        </FormItem>
-        <FormItem label="Cookie" {...formItemLayout}>
-          {children && children.map(item => item)}
           {this.renderButton()}
         </FormItem>
       </Form>
