@@ -1,6 +1,7 @@
 import 'whatwg-fetch';
+
 const context_path = document.location.pathname.split('/')[1] === 'easy-doc.html' ? '' : '/' + document.location.pathname.split('/')[1];
-export const base = window.location.origin + context_path;
+export const base =  localStorage.getItem('base') || (window.location.origin + context_path); // window.location.origin + context_path
 // 获取接口文档的地址
 const base_url = base + '/easy-doc/resource';
 // 获取请求地址
@@ -9,11 +10,20 @@ const getList = base + '/easy-doc/list';
 const cookieUrl = base + '/easy-doc/addCookie';
 // 压力测试地址
 export const pressure_url = base + '/easy-doc/pressureTest';
-const base_fetch = function(url, method, body) {
-  const globalParam = localStorage.getItem('globalParam');
+const base_fetch = function(url, method, body, isQueryString) {
+  const obj = localStorage.getItem('globalParam') || '[]';
   const token = localStorage.getItem('token');
-  const symbol = url.indexOf('?') !== -1 ? '&' : '?';
-  url = globalParam !== null ? url + symbol + globalParam : url;
+  const globalParam = JSON.parse(obj)
+  let params = ''
+  globalParam.forEach(item => params += `${item.key}=${item.value}&`)
+  if (params) {
+    url = url + (url.indexOf('?') !== -1 ? '&' : '?') + params.slice(0, params.length - 1)
+  }
+
+  if (method === 'GET' && body && isQueryString) {
+    Object.keys(body).forEach(item => params += `${item}=${body[item]}&`)
+    url = url + (url.indexOf('?') !== -1 ? '&' : '?') + params.slice(0, params.length - 1)
+  }
   const header = function() {
     const obj = {
       method: method,
@@ -24,11 +34,13 @@ const base_fetch = function(url, method, body) {
     if (method === 'POST') {
       obj['body'] = body;
     }
+  
     if (token !== null) {
       obj.headers['Authorization'] = token;
     }
     return obj;
   };
+
   const res = fetch(url, header())
     .then(response => {
       return response.json();
@@ -38,8 +50,8 @@ const base_fetch = function(url, method, body) {
 };
 
 // get请求
-export const getMethod = function() {
-  return base_fetch(base_url, 'GET');
+export const getMethod = function(params, isQueryString) {
+  return base_fetch(base_url, 'GET', params, isQueryString);
 };
 export const getRes = function(url, method, body) {
   return base_fetch(url, method, body);

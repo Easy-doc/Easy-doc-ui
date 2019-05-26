@@ -20,13 +20,6 @@ export const getDefault = function(val, type) {
   return val;
 };
 
-// export const getUrl = function(params, type) {
-//     const base = window.location.protocol + window.location.hostname;
-//     switch() {
-
-//     }
-//     console.log(base)
-// }
 export const jsonParse = function(obj) {
   if (!obj instanceof Object) {
     return '';
@@ -35,7 +28,7 @@ export const jsonParse = function(obj) {
 };
 
 export const getPressureRes = function(obj) {
-  if (!obj instanceof Object) {
+  if (!obj instanceof Object || !obj) {
     return '';
   }
   let res = {};

@@ -30,14 +30,12 @@ class FormContent extends React.Component {
   };
 
   handleOk = e => {
-    console.log(e);
     this.setState({
       visible: false,
     });
   };
 
   handleCancel = e => {
-    console.log(e);
     this.setState({
       visible: false,
     });
@@ -69,7 +67,7 @@ class FormContent extends React.Component {
             param += `${item}=${values[item]}&`;
           }
         });
-        url = base + path + '?' + param.substring(0, param.length - 1);
+        url = base + path + (param ? '?' : '' ) + param.substring(0, param.length - 1);
       }
     });
     try {

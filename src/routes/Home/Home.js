@@ -1,13 +1,13 @@
 import React from 'react';
-import { Layout, Menu, Row, Col, Divider, Input, Modal, Form, Radio, Tabs, Select } from 'antd';
+import { Layout, Menu, Row, Col, Divider, Input, Modal, Form, Radio, Tabs, Select, message } from 'antd';
 import { getMethod, pressureTest, pressure_url, getUrlList } from '../../config.js';
 import { Collapse } from 'antd';
 import { Button } from 'antd';
 import { jsonParse, getDefault, getPressureRes, getBtnBg } from '../util/util';
 import { defaultObj } from '../util/constant';
 import FormContent from '../component/FormContent/FormContent';
-import Authorize from '../component/Authorize/Authorize';
 import Global from '../component/Global/Global';
+import LoginForm from '../component/LoginForm';
 import './Home.css';
 
 const { Header, Content, Footer } = Layout;
@@ -34,6 +34,10 @@ class Index extends React.Component {
       urlList: [],
       modelVisble: false,
       field: {},
+      loginDialogVisible: false, //登录弹窗
+      loading: false,
+      baseModalVisible: false,
+      baseUrl: '',
     };
     this.renderTitle = this.renderTitle.bind(this);
     this.c = this.renderPressurelContent.bind(this);
@@ -41,7 +45,14 @@ class Index extends React.Component {
   }
 
   async componentDidMount() {
-    const resource = await getMethod();
+    const loginInfo = { 
+      account: localStorage.getItem('account') || '', 
+      password:localStorage.getItem('password') || '' 
+    }
+    const resource = await getMethod(loginInfo, true);
+    if (resource && resource.code === -1 && !resource.success) {
+      this.setState({ loginDialogVisible: true })
+    }
     this.setState({ resource: resource == null ? {} : resource.data});
   }
 
@@ -118,6 +129,33 @@ class Index extends React.Component {
       this.setState({ modelVisble: true, field: data });
     }
   }
+
+  hiddenModal = (e) => {
+    this.setState({ loginDialogVisible:  e })
+  }
+
+  // 退出登录
+  loginout = () => {
+    localStorage.removeItem('account')
+    localStorage.removeItem('password')
+    window.location.reload()
+  }
+
+  baseOk = () => {
+    const { baseUrl } = this.state
+    if (!baseUrl) {
+      message.warning('url不能为空')
+      return
+    }
+    localStorage.setItem('base', baseUrl)
+    this.setState({ baseModalVisible: false })
+    window.location.reload()
+  }
+
+  baseChange = (e) => {
+    this.setState({ baseUrl: e.target.value })
+  }
+
   //渲染菜单栏
   renderMenu() {
     return (
@@ -127,20 +165,33 @@ class Index extends React.Component {
           theme="dark"
           mode="horizontal"
           defaultSelectedKeys={['2']}
-          style={{ lineHeight: '64px', background: '#26292e' }}
-        />
+          style={{ lineHeight: '64px', background: '#26292e', color: '#fff' }}
+        >
+        <Menu.SubMenu
+          style={{ float: 'right' }}
+          title= {localStorage.getItem('account') || ''}
+        >
+          {localStorage.getItem('account') && <Menu.Item onClick={this.loginout}>退出登录</Menu.Item>}
+        </Menu.SubMenu>
+        <Menu.Item
+        style={{ float: 'right' }}
+        onClick={() => this.setState({ baseModalVisible: true })}
+       >更换接口地址
+       </Menu.Item>
+        </Menu>
       </Header>
     );
   }
 
   renderTitle() {
     const { resource = {} } = this.state;
-    const { name = '' } = resource;
+    const { name = '', description = '' } = resource;
     return (
       <div className="title">
         {JSON.stringify(resource) !== '{}' ? (
           <div>
             <div className="name">{name}</div>
+            <div>{description}</div>
           </div>
         ) : null}
       </div>
@@ -411,12 +462,38 @@ class Index extends React.Component {
     );
   }
 
+  // 添加用户登录权限
+  renderLoginDialog = () => {
+    const { loginDialogVisible } = this.state
+    return (<Modal
+      visible={loginDialogVisible}
+      title="登录"
+      footer={null}
+    >
+    <LoginForm hiddenModal={this.hiddenModal} />
+    </Modal>)
+  }
+
   renderFoot() {
     return (
       <Footer style={{ textAlign: 'center', marginTop: '10px' }}>
-        Easy-doc ©2018 Created & UI Designed by Stalary
+        Easy-doc ©2019 Created by Stalary
       </Footer>
     );
+  }
+
+  renderBaseModal() {
+    const { baseModalVisible } = this.state
+    return (
+      <Modal
+        title="更换地址"
+        visible={baseModalVisible}
+        onCancel={() => this.setState({ baseModalVisible: false })}
+        onOk={this.baseOk}
+      >
+        <Input placeholder="请输入地址" onChange={this.baseChange}/>
+      </Modal>
+    )
   }
 
   render() {
@@ -425,7 +502,9 @@ class Index extends React.Component {
         {this.renderMenu()}
         {this.renderTitle()}
         {this.renderTabs()}
+        {this.renderLoginDialog()}
         {this.renderFoot()}
+        {this.renderBaseModal()}
       </Layout>
     );
   }

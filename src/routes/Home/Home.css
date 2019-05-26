@@ -205,3 +205,7 @@
   cursor: pointer;
   color: #92ad9f;
 }
+
+.login-form-button {
+  float: right;
+}

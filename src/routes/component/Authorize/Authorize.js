@@ -20,7 +20,6 @@ class Authorize extends React.Component {
       num: 1,
       key: value.key,
       value: value.value,
-      children: [],
     };
   }
 
@@ -126,7 +125,6 @@ class Authorize extends React.Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { children } = this.state;
     return (
       <Form onSubmit={this.handleAuthorize.bind(this)}>
         <FormItem label="Token" {...formItemLayout}>
