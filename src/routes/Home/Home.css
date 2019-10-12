@@ -209,3 +209,13 @@
 .login-form-button {
   float: right;
 }
+
+.treeNode {
+  color: #fff;
+  font-size: 20px;
+}
+
+.node {
+  margin-right: 50px;
+  margin-left: -30px;
+}

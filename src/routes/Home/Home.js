@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Menu, Row, Col, Divider, Input, Modal, Form, Radio, Tabs, Select, message } from 'antd';
 import { getMethod, pressureTest, pressure_url, getUrlList } from '../../config.js';
-import { Collapse } from 'antd';
+import { Collapse, Tree, Icon } from 'antd';
 import { Button } from 'antd';
 import { jsonParse, getDefault, getPressureRes, getBtnBg } from '../util/util';
 import { defaultObj } from '../util/constant';
@@ -16,6 +16,7 @@ const { TextArea } = Input;
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
+const { TreeNode } = Tree
 
 const formItemLayout = {
   labelCol: { span: 8 },
@@ -417,7 +418,27 @@ class Index extends React.Component {
     );
   }
 
+
   renderModelTable(model) {
+    const loop = data => {
+      if (data.nestModel) {
+       return data.nestModel.fieldList.map((item, idx) => 
+        <TreeNode 
+          title={
+            <span className="treeNode">
+              <span className="node">{item.name}</span>
+              <span className="node">{item.type}</span>
+              <span className="node">{item.description}</span>
+            </span>}
+          key={`${item.name}-${idx}`}
+          style={{ color: '#fff' }}
+        >
+          {loop(item)}
+        </TreeNode>)
+      }
+
+    }
+
     return (
       <div className="modelItem">
         <Row justify="space-around" type="flex" className="col">
@@ -428,7 +449,18 @@ class Index extends React.Component {
         {model &&
           model.map(modelItem => (
             <Row justify="space-around" type="flex" className="col">
-              <Col span={6}>{modelItem.name}</Col>
+              <Col span={6}>
+                {modelItem.name}
+                {modelItem.nestModel && (
+                  <Tree
+                    showIcon
+                    defaultExpandAll
+                    switcherIcon={<Icon type="down" />}
+                  >
+                    {loop(modelItem)}
+                  </Tree>
+                )}
+              </Col>
               <Col span={6}>{modelItem.type}</Col>
               <Col span={6}>{modelItem.description}</Col>
             </Row>
