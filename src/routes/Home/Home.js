@@ -267,27 +267,27 @@ class Index extends React.Component {
             </Row>
             {responseList &&
               responseList.map((item, idx) => (
-                <div>
-                  <Row key={`res${idx}`} className="subPanelDetail" type="flex" align="top">
+                <div key={`res${idx}`}>
+                  <Row className="subPanelDetail" type="flex" align="top">
                     <Col span={12}>{item.code}</Col>
                     <Col span={12}>{item.description}</Col>
                   </Row>
                   {item &&
                     item.fieldList &&
-                    item.fieldList.map(field => (
-                      <Row>
+                    item.fieldList.map((field, idx) => (
+                      <Row key={`filed-${idx}`}>
                         <Col span={12} />
                         <Col span={12}>
                           <p
-                            onClick={this.showModal.bind(this, field)}
+                            onClick={() => this.showModal(field)}
                             className={field.data ? 'pointer' : ''}
                           >
                             {field.name} : {field.description}
                           </p>
                         </Col>
-                        {this.renderModelDialog()}
                       </Row>
                     ))}
+                    {this.renderModelDialog()}
                 </div>
               ))}
           </Row>
