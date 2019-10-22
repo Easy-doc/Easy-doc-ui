@@ -44,7 +44,6 @@
 }
 
 .panel {
-  /* border: 1px solid #ededed; */
   height: 75px;
   display: flex;
   justify-content: space-between;
@@ -54,7 +53,7 @@
 }
 
 .panelButton {
-  width: 80px;
+  width: 100px;
   text-align: center;
   height: 35px;
   margin: 0 10px;
@@ -62,7 +61,7 @@
 }
 
 .pressButton {
-  width: 80px;
+  width: 100px;
   float: right;
   text-align: center;
   margin: 0 10px;
@@ -89,16 +88,9 @@
 }
 
 .panelItem .author {
-  height: fit-content;
-  float: right;
   font-size: 20px;
-  line-height: 20px;
-  margin: 33px 20px;
-  padding: 4px 7px;
-  border-radius: 17px;
-  background: #5a5a5a;
-  color: #fff;
 }
+
 
 .subPanel {
   text-align: left;
@@ -127,7 +119,7 @@
 
 .deprecated {
   text-decoration: line-through;
-  text-decoration-color: red;
+  text-decoration-color: #000;
 }
 
 .modelPanel {
@@ -218,4 +210,38 @@
 .node {
   margin-right: 50px;
   margin-left: -30px;
+}
+
+.achor {
+  text-decoration: none;
+  color: #000;
+}
+
+.achor:link {
+  text-decoration: none;
+  color: #000;
+}
+
+.achor:active {
+  text-decoration: none;
+  color: #000;
+}
+
+.achor:visited {
+  text-decoration: none;
+  color: #000;
+}
+
+.achor:hover {
+  text-decoration: none;
+  color: #000;
+}
+
+.contact {
+  font-size: 16px;
+  border-radius: 15px;
+  vertical-align: top;
+  padding: 5px 10px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.52);
 }

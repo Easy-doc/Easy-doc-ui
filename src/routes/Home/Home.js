@@ -27,6 +27,7 @@ class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      hash: [],
       resource: {},
       value: '',
       pressureInfo: {},
@@ -51,10 +52,22 @@ class Index extends React.Component {
       password:localStorage.getItem('password') || '' 
     }
     const resource = await getMethod(loginInfo, true);
+    const temp = window.location.hash.split('/')
     if (resource && resource.code === -1 && !resource.success) {
       this.setState({ loginDialogVisible: true })
     }
-    this.setState({ resource: resource == null ? {} : resource.data});
+    this.setState({ 
+      resource: resource == null ? {} : resource.data,
+      hash: temp.splice(1, temp.length)
+    });
+
+    setTimeout(() => {
+      const el = document.getElementById(window.location.hash)
+      console.log(222222, el)
+      if (el) {
+        el.scrollIntoView(true, { behavior: 'smooth' })
+      }
+    }, 1000)
   }
 
   handleOk = () => {
@@ -186,34 +199,36 @@ class Index extends React.Component {
 
   renderTitle() {
     const { resource = {} } = this.state;
-    const { name = '', description = '' } = resource;
+    const { name = '', description = '', contact } = resource;
+    if (Object.keys(resource).length === 0) return null
+   
     return (
       <div className="title">
-        {JSON.stringify(resource) !== '{}' ? (
-          <div>
-            <div className="name">{name}</div>
-            <div>{description}</div>
-          </div>
-        ) : null}
+        <div className="name">
+          {name}
+          {contact && <span className="contact">{contact}</span>}
+        </div>
+      <div>{description}</div>
       </div>
     );
   }
 
   renderTabs() {
+    const { hash } = this.state
     return (
       <Content style={{ padding: '0 50px', marginTop: 10, textAlign: 'left' }}>
         <div className="container">
-          <Tabs className="tabs" type="card">
-            <TabPane tab="接口列表" key="1" className="tabs-1">
+          <Tabs className="tabs" type="card" defaultActiveKey={hash[0]}>
+            <TabPane tab="接口列表" key="port" className="tabs-1">
               {this.renderContent()}
             </TabPane>
-            <TabPane tab="Models" key="2" className="tabs-2">
+            <TabPane tab="Models" key="model" className="tabs-2">
               {this.renderModel()}
             </TabPane>
-            <TabPane tab="压力测试" key="3" className="tabs-3">
+            <TabPane tab="压力测试" key="pressure" className="tabs-3">
               {this.renderPressurelContent()}
             </TabPane>
-            <TabPane tab="全局参数" key="5" className="tabs-5">
+            <TabPane tab="全局参数" key="global" className="tabs-5">
               <Global />
             </TabPane>
           </Tabs>
@@ -224,16 +239,16 @@ class Index extends React.Component {
 
   //渲染折叠面板内容
   renderContent() {
-    const { resource = {} } = this.state;
-    const { controllerList } = resource;
+    const { resource = {}, hash } = this.state;
+    const { controllerList = [] } = resource;
     return (
-      <Collapse bordered={false} defaultActiveKey={['1']} className="collapse" accordion>
+      <Collapse bordered={false} defaultActiveKey={[`panel${hash[0]}`]} className="collapse" accordion>
         {controllerList &&
           controllerList.map((item, index) => (
-            <Panel header={this.renderContentItem(item)} key={`panel` + index}>
+            <Panel header={this.renderContentItem(item, index)} key={`panel${index}`}>
               {item.methodList &&
-                item.methodList.map((contentItem, index) =>
-                  this.renderPanelContent(contentItem, index, item)
+                item.methodList.map((contentItem, idx) =>
+                  this.renderPanelContent(contentItem, idx, item, index)
                 )}
             </Panel>
           ))}
@@ -242,12 +257,13 @@ class Index extends React.Component {
   }
 
   //子panel的内容
-  renderPanelContent(contentItem, index, item) {
+  renderPanelContent(contentItem, index, item, pIndex) {
     const path = item.path + contentItem.path;
     const { paramList, responseList, body, type } = contentItem;
+    const { hash } = this.state
     return (
-      <Collapse accordion key={`col-${index}`} bordered={false} showArrow={false}>
-        <Panel header={this.renderPanelContentHead(contentItem)}>
+      <Collapse accordion key={`col-${index}`} bordered={false} showArrow={false} defaultActiveKey={[hash[1]]}>
+        <Panel header={this.renderPanelContentHead(contentItem, index, pIndex)} key={index}>
           <Row className="subPanel">
             <Col>参数</Col>
             <Divider />
@@ -385,35 +401,38 @@ class Index extends React.Component {
   }
 
   //子panel内容的头部
-  renderPanelContentHead(contentItem) {
+  renderPanelContentHead(contentItem, cIdx, pIdx) {
     return (
       <div className="panel">
-        <div>
+        <a href={`#/${pIdx}/${cIdx}`} id={`#/${pIdx}/${cIdx}`} className="achor">
           <Button
             type="primary"
             className="panelButton"
             style={{ background: getBtnBg(contentItem.type) }}
           >
-            {contentItem.type}
+            {contentItem.type || 'UNLIMITED'}
           </Button>
           <span className={contentItem.deprecated ? 'deprecated' : null}>
             {contentItem.path} {contentItem.description}
           </span>
-        </div>
+        </a>
       </div>
     );
   }
 
   //panel的头部描述
-  renderContentItem(item) {
+  renderContentItem(item, index) {
     return (
       <div className="panelItem">
-        <p>
+        <a href={`#/${index}`} id={`#/${index}`} className="achor">
           <span className="name">{item.name}</span>
           <span className="headPath">{item.path}</span>
           <span className="description">{item.description}</span>
-        </p>
-        <span className={item.author ? 'author' : ''}>{`${item.author}`}</span>
+        </a>
+        <span className="author">
+          <Icon type="user" />
+          {item.author}
+        </span>
       </div>
     );
   }
@@ -473,18 +492,19 @@ class Index extends React.Component {
     const { resource = {} } = this.state;
     const { modelList } = resource;
     return (
-      <Collapse className="collapse" bordered={false}>
+      <Collapse className="collapse" bordered={false} defaultActiveKey={[window.location.hash]}>
         {modelList &&
-          modelList.map(item => (
+          modelList.map((item, idx) => (
             <Panel
               className="modelPanel"
               hoverable
+              key={`#/model/${idx}`}
               header={
-                <div>
+                <a className="achor" href={`#/model/${idx}`} id={`#/model/${idx}`}>
                   <span className={item.deprecated === false ? '' : 'deleteText'}>{item.name}</span>
                   &nbsp;&nbsp;
                   <span className="modelDesciption">{item.description}</span>
-                </div>
+                </a>
               }
             >
               {this.renderModelTable(item.fieldList)}

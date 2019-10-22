@@ -1,7 +1,8 @@
 import 'whatwg-fetch';
 
 const context_path = document.location.pathname.split('/')[1] === 'easy-doc.html' ? '' : '/' + document.location.pathname.split('/')[1];
-export const base =  localStorage.getItem('base') || (window.location.origin + context_path); // window.location.origin + context_path
+export const base = 'http://tiku-editor-test.inner.youdao.com'
+// export const base =  localStorage.getItem('base') || (window.location.origin + context_path); // window.location.origin + context_path
 // 获取接口文档的地址
 const base_url = base + '/easy-doc/resource';
 // 获取请求地址
