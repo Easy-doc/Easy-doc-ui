@@ -63,7 +63,6 @@ class Index extends React.Component {
 
     setTimeout(() => {
       const el = document.getElementById(window.location.hash)
-      console.log(222222, el)
       if (el) {
         el.scrollIntoView(true, { behavior: 'smooth' })
       }
