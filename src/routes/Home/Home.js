@@ -217,8 +217,8 @@ class Index extends React.Component {
     return (
       <Content style={{ padding: '0 50px', marginTop: 10, textAlign: 'left' }}>
         <div className="container">
-          <Tabs className="tabs" type="card" defaultActiveKey={hash[0]}>
-            <TabPane tab="接口列表" key="port" className="tabs-1">
+          <Tabs className="tabs" type="card" activeKey={hash[0]} onChange={(key) => this.setState({ hash: [key] })}>
+            <TabPane tab="接口列表" key="interface" className="tabs-1">
               {this.renderContent()}
             </TabPane>
             <TabPane tab="Models" key="model" className="tabs-2">
@@ -241,7 +241,7 @@ class Index extends React.Component {
     const { resource = {}, hash } = this.state;
     const { controllerList = [] } = resource;
     return (
-      <Collapse bordered={false} defaultActiveKey={[`panel${hash[0]}`]} className="collapse" accordion>
+      <Collapse bordered={false} defaultActiveKey={[`panel${hash[1]}`]} className="collapse" accordion>
         {controllerList &&
           controllerList.map((item, index) => (
             <Panel header={this.renderContentItem(item, index)} key={`panel${index}`}>
@@ -261,8 +261,8 @@ class Index extends React.Component {
     const { paramList, responseList, body, type } = contentItem;
     const { hash } = this.state
     return (
-      <Collapse accordion key={`col-${index}`} bordered={false} showArrow={false} defaultActiveKey={[hash[1]]}>
-        <Panel header={this.renderPanelContentHead(contentItem, index, pIndex)} key={index}>
+      <Collapse accordion key={`col-${index}`} bordered={false} showArrow={false} defaultActiveKey={[hash[2]]}>
+        <Panel header={this.renderPanelContentHead(contentItem, index, pIndex)} key={index.toString()}>
           <Row className="subPanel">
             <Col>参数</Col>
             <Divider />
@@ -403,7 +403,7 @@ class Index extends React.Component {
   renderPanelContentHead(contentItem, cIdx, pIdx) {
     return (
       <div className="panel">
-        <a href={`#/${pIdx}/${cIdx}`} id={`#/${pIdx}/${cIdx}`} className="achor">
+        <a href={`#/interface/${pIdx}/${cIdx}`} id={`#/interface/${pIdx}/${cIdx}`} className="achor">
           <Button
             type="primary"
             className="panelButton"
@@ -423,7 +423,7 @@ class Index extends React.Component {
   renderContentItem(item, index) {
     return (
       <div className="panelItem">
-        <a href={`#/${index}`} id={`#/${index}`} className="achor">
+        <a href={`#/interface/${index}`} id={`#/interface/${index}`} className="achor">
           <span className="name">{item.name}</span>
           <span className="headPath">{item.path}</span>
           <span className="description">{item.description}</span>
