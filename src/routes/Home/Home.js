@@ -217,7 +217,7 @@ class Index extends React.Component {
     return (
       <Content style={{ padding: '0 50px', marginTop: 10, textAlign: 'left' }}>
         <div className="container">
-          <Tabs className="tabs" type="card" activeKey={hash[0]} onChange={(key) => this.setState({ hash: [key] })}>
+          <Tabs className="tabs" type="card" activeKey={hash[0] || 'interface'} onChange={(key) => this.setState({ hash: [key] })}>
             <TabPane tab="接口列表" key="interface" className="tabs-1">
               {this.renderContent()}
             </TabPane>
@@ -236,15 +236,21 @@ class Index extends React.Component {
     );
   }
 
+  handleContentChange = (key) => {
+    const hash = [...this.state.hash]
+    hash[1] = key
+    this.setState({ hash })
+  }
+
   //渲染折叠面板内容
   renderContent() {
     const { resource = {}, hash } = this.state;
     const { controllerList = [] } = resource;
     return (
-      <Collapse bordered={false} defaultActiveKey={[`panel${hash[1]}`]} className="collapse" accordion>
+      <Collapse bordered={false} activeKey={[hash[1]]} className="collapse" accordion onChange={this.handleContentChange}>
         {controllerList &&
           controllerList.map((item, index) => (
-            <Panel header={this.renderContentItem(item, index)} key={`panel${index}`}>
+            <Panel header={this.renderContentItem(item, index)} key={index.toString()}>
               {item.methodList &&
                 item.methodList.map((contentItem, idx) =>
                   this.renderPanelContent(contentItem, idx, item, index)
